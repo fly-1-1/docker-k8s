@@ -1,0 +1,61 @@
+version: "3.2"
+services:
+  tomcat01:
+    container_name: tomcat01 #--name
+    image: tomcat:8.0-jre8
+    ports: # map container port 8080 to host port 8080
+      - "8080:8080"
+    volumes:
+      # - /home/jy/Desktop/apps:/usr/local/tomcat/webapps
+      - tomcatwebapps01:/usr/local/tomcat/webapps
+    networks:
+      - hello
+
+  tomcat02:
+    container_name: tomcat02 #--name
+    image: tomcat:8.0-jre8
+    ports: # map container port 8080 to host port 8080
+      - "8081:8080"
+    volumes:
+      # - /home/jy/Desktop/apps:/usr/local/tomcat/webapps
+      - tomcatwebapps02:/usr/local/tomcat/webapps
+    networks:
+      - hello
+
+  mysql:
+    image: mysql:5.7.32
+    container_name: mysql
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+      - mysqlconf:/etc/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - hello
+
+  redis:
+    image: redis
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: "redis-server --appendonly yes"
+    networks:
+      - hello
+
+
+volumes:
+  tomcatwebapps01: #使用的卷
+  tomcatwebapps02:
+  #external: true #声明外部卷，docker-compose.yml文件中定义的卷
+  mysqldata:
+  mysqlconf:
+  redisdata:
+
+networks:
+  hello: #创建网络
+    #external:
+      #true
