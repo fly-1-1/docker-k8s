@@ -10,6 +10,20 @@ services:
       - tomcatwebapps01:/usr/local/tomcat/webapps
     networks:
       - hello
+    depends_on: #代表这个容器依赖于mysql和redis后才能启动
+      - tomcat02
+      - mysql
+      - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 10s  # 间隔时间
+      timeout: 5s # 超时时间
+      retries: 3  # 重试次数
+    ulimits:
+      nproc: 65535 # 最大进程数
+      nofile:
+        soft: 65535 # 最大打开文件数
+        hard: 65535 # 最大打开文件数
 
   tomcat02:
     container_name: tomcat02 #--name
@@ -30,8 +44,10 @@ services:
     volumes:
       - mysqldata:/var/lib/mysql
       - mysqlconf:/etc/mysql
-    environment:
-      - MYSQL_ROOT_PASSWORD=root
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=root
+    env_file:
+      - mysql.env
     networks:
       - hello
 
